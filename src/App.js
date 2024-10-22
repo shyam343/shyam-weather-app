@@ -1,23 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from "react";
+import CurrentLocation from "./components/CurrentLocation";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+    <div className="container">
+      <CurrentLocation />
+      <div className="footer-info">
+        Developed by{" "}
+        <a target="_blank" href="https://shyamsah.netlify.app/" rel="noreferrer">
+          Shyam Kumar Sah
         </a>
-      </header>
+      </div>
     </div>
   );
 }
