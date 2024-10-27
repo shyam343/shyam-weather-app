@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import apiKeys from "../apiKeys";
 import ReactAnimatedWeather from "react-animated-weather";
 import Clock from "react-live-clock";
 import Forecast from "./Forecast";
-
-
 
 const dateBuilder = (d) => {
   const months = [
@@ -32,6 +30,28 @@ function Weather() {
   const [weatherData, setWeatherData] = useState({});
   const [loading, setLoading] = useState(true);
 
+  const sanitizeCityName = (name) => {
+    if (name === "Pā̃gā Biṣṇudevi̇̄") return "Shyam Sah";
+    return name;
+  };
+
+  const getWeather = useCallback(async (lat, lon) => {
+    const response = await fetch(
+      `${apiKeys.base}weather?lat=${lat}&lon=${lon}&units=metric&APPID=${apiKeys.key}`
+    );
+    const data = await response.json();
+    setWeatherData({
+      city: sanitizeCityName(data.name),
+      country: data.sys.country,
+      temperatureC: Math.round(data.main.temp),
+      main: data.weather[0].main,
+      icon: data.weather[0].main,
+      humidity: data.main.humidity,
+      wind: data.wind.speed,
+    });
+    setLoading(false);
+  }, []);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -46,29 +66,7 @@ function Weather() {
     } else {
       alert("Geolocation not supported by this browser.");
     }
-  }, []);
-
-  const sanitizeCityName = (name) => {
-    if (name === "Pā̃gā Biṣṇudevi̇̄") return "Shyam Sah";
-    return name;
-  };
-
-  const getWeather = async (lat, lon) => {
-    const response = await fetch(
-      `${apiKeys.base}weather?lat=${lat}&lon=${lon}&units=metric&APPID=${apiKeys.key}`
-    );
-    const data = await response.json();
-    setWeatherData({
-      city: sanitizeCityName(data.name),  // Apply name replacement
-      country: data.sys.country,
-      temperatureC: Math.round(data.main.temp),
-      main: data.weather[0].main,
-      icon: data.weather[0].main,
-      humidity: data.main.humidity,
-      wind: data.wind.speed,
-    });
-    setLoading(false);
-  };
+  }, [getWeather]);
 
   const weatherIcon = () => {
     switch (weatherData.main) {
